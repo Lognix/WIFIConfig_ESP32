@@ -1,9 +1,8 @@
 #include "wifi_manager.h"
 #include "pins_manager.h"
+#include "pins_config.h"
 
-const int statusLed = 13;
-
-PinsManager WIFIStatusLED(statusLed, OUTPUT);
+PinsManager WIFIStatusLED(STATUS_LED_PIN, OUTPUT);
 
 WiFiManager::WiFiManager() {
 }

@@ -3,6 +3,7 @@
 #include "web_server.h"
 #include "nvs_manager.h"
 #include "pins_manager.h"
+#include "pins_config.h"
 
 const char *ssid_ap = "CONFIGURATION";
 const char *password_ap = "12345678";
@@ -10,7 +11,7 @@ const char *password_ap = "12345678";
 WiFiManager wifiManager; 
 WebServerManager webServer; 
 NVSManager nvsManager;
-PinsManager statusLED(13, OUTPUT);
+PinsManager statusLED(STATUS_LED_PIN, OUTPUT);
 
 void handleCredentials(const String& ssid, const String& pass) {
     nvsManager.saveData("ssid", ssid.c_str());
