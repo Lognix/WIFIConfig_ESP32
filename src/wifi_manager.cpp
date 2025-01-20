@@ -1,8 +1,12 @@
 #include "wifi_manager.h"
 #include "pins_manager.h"
 #include "pins_config.h"
+#include "nvs_manager.h"
 
 PinsManager WIFIStatusLED(STATUS_LED_PIN, OUTPUT);
+NVSManager save;
+
+
 
 WiFiManager::WiFiManager() {
 }
@@ -21,10 +25,14 @@ void WiFiManager::connect(const String& ssid, const String& password) {
         Serial.println("Wi-Fi Connected!");
         Serial.print("IP: ");
         Serial.println(WiFi.localIP());
+        save.saveData("last", "true");
         WIFIStatusLED.setLed(true);
     } else {
         Serial.println("Failed to connect.");
         WIFIStatusLED.setLed(false);
+        save.saveData("last", "false");
+        //startAP("CONFIGURATION", "12345678");
+        //ESP.restart();
     }
 }
 

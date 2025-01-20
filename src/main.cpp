@@ -31,18 +31,25 @@ void setup() {
     Serial.println("SSID: " + ssid);
     Serial.println("PSWD: " + pass);
 
+
+
+
+
+
     if (last == "true") {
         wifiManager.connect(ssid, pass);
     } else {
         wifiManager.startAP(ssid_ap, password_ap);
         webServer.setCredentialsHandler(handleCredentials);
         webServer.start();
+        while(!wifiManager.isConnected()) {
+            webServer.handleClient();
+            statusLED.blinkLed(50);
+        }
     }
+    
 }
 
 void loop() {
-    if (!wifiManager.isConnected()) {
-        webServer.handleClient();
-        statusLED.blinkLed(50);
-    }
+    
 }
