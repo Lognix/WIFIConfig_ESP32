@@ -2,14 +2,15 @@
 #include "wifi_manager.h"
 #include "web_server.h"
 #include "nvs_manager.h"
+#include "pins_manager.h"
 
 const char *ssid_ap = "CONFIGURATION";
 const char *password_ap = "12345678";
-const int statusLed = 13;
 
-WiFiManager wifiManager(statusLed);
-WebServerManager webServer;
+WiFiManager wifiManager; 
+WebServerManager webServer; 
 NVSManager nvsManager;
+PinsManager statusLED(13, OUTPUT);
 
 void handleCredentials(const String& ssid, const String& pass) {
     nvsManager.saveData("ssid", ssid.c_str());
@@ -20,7 +21,7 @@ void handleCredentials(const String& ssid, const String& pass) {
 
 void setup() {
     Serial.begin(115200);
-
+    
     String ssid = nvsManager.readData("ssid");
     String pass = nvsManager.readData("pass");
     String last = nvsManager.readData("last");
@@ -41,6 +42,6 @@ void setup() {
 void loop() {
     if (!wifiManager.isConnected()) {
         webServer.handleClient();
-        wifiManager.blinkLed(250);
+        statusLED.blinkLed(50);
     }
 }

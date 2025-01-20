@@ -1,7 +1,11 @@
 #include "wifi_manager.h"
+#include "pins_manager.h"
 
-WiFiManager::WiFiManager(int statusLedPin) : _statusLedPin(statusLedPin) {
-    pinMode(_statusLedPin, OUTPUT);
+const int statusLed = 13;
+
+PinsManager WIFIStatusLED(statusLed, OUTPUT);
+
+WiFiManager::WiFiManager() {
 }
 
 void WiFiManager::connect(const String& ssid, const String& password) {
@@ -10,7 +14,7 @@ void WiFiManager::connect(const String& ssid, const String& password) {
 
     int attempts = 0;
     while (WiFi.status() != WL_CONNECTED && attempts < 20) {
-        blinkLed(300);
+        WIFIStatusLED.blinkLed(300);
         attempts++;
     }
 
@@ -18,10 +22,10 @@ void WiFiManager::connect(const String& ssid, const String& password) {
         Serial.println("Wi-Fi Connected!");
         Serial.print("IP: ");
         Serial.println(WiFi.localIP());
-        setLed(true);
+        WIFIStatusLED.setLed(true);
     } else {
         Serial.println("Failed to connect.");
-        setLed(false);
+        WIFIStatusLED.setLed(false);
     }
 }
 
@@ -38,15 +42,4 @@ void WiFiManager::startAP(const char* apSSID, const char* apPassword) {
 
 bool WiFiManager::isConnected() const {
     return WiFi.status() == WL_CONNECTED;
-}
-
-void WiFiManager::blinkLed(int delayValue) {
-    digitalWrite(_statusLedPin, HIGH);
-    delay(delayValue);
-    digitalWrite(_statusLedPin, LOW);
-    delay(delayValue);
-}
-
-void WiFiManager::setLed(bool state) {
-    digitalWrite(_statusLedPin, state ? HIGH : LOW);
 }
