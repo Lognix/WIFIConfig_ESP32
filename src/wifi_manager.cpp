@@ -32,7 +32,7 @@ void WiFiManager::connect(const String& ssid, const String& password) {
         WIFIStatusLED.setLed(false);
         save.saveData("last", "false");
         //startAP("CONFIGURATION", "12345678");
-        //ESP.restart();
+        ESP.restart();
     }
 }
 

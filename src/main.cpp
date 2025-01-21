@@ -17,26 +17,16 @@ void handleCredentials(const String& ssid, const String& pass) {
     nvsManager.saveData("ssid", ssid.c_str());
     nvsManager.saveData("pass", pass.c_str());
     nvsManager.saveData("last", "true");
+    delay(1000);
     ESP.restart();
 }
 
-void setup() {
-    Serial.begin(115200);
-    
-    String ssid = nvsManager.readData("ssid");
-    String pass = nvsManager.readData("pass");
+void checkLastConnection() {
     String last = nvsManager.readData("last");
-
-    Serial.println("Last connecting status: " + last);
-    Serial.println("SSID: " + ssid);
-    Serial.println("PSWD: " + pass);
-
-
-
-
-
-
     if (last == "true") {
+        String ssid = nvsManager.readData("ssid");
+        String pass = nvsManager.readData("pass");
+        delay(100);
         wifiManager.connect(ssid, pass);
     } else {
         wifiManager.startAP(ssid_ap, password_ap);
@@ -44,10 +34,15 @@ void setup() {
         webServer.start();
         while(!wifiManager.isConnected()) {
             webServer.handleClient();
-            statusLED.blinkLed(50);
+            statusLED.blinkLed(150);
         }
     }
-    
+}
+
+
+void setup() {
+    Serial.begin(115200);
+    checkLastConnection();
 }
 
 void loop() {
