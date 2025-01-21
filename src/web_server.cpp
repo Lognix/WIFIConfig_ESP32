@@ -1,4 +1,5 @@
 #include "web_server.h"
+#include "html_content.h"
 
 WebServerManager::WebServerManager() : server(80), _credentialsHandler(nullptr) {}
 
@@ -18,12 +19,7 @@ void WebServerManager::setCredentialsHandler(void (*handler)(const String& ssid,
 }
 
 void WebServerManager::handleRoot() {
-    server.send(200, "text/html",
-                "<form action=\"/connect\" method=\"POST\">"
-                "SSID: <input type=\"text\" name=\"ssid\"><br>"
-                "PSWD: <input type=\"password\" name=\"pass\"><br>"
-                "<input type=\"submit\" value=\"Connect\">"
-                "</form>");
+    server.send(200, "text/html", HTML_SETUP);
 }
 
 void WebServerManager::handleConnect() {
