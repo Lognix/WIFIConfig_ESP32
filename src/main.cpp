@@ -8,10 +8,8 @@
 const char *ssid_ap = "CONFIGURATION";
 const char *password_ap = "12345678";
 
-WiFiManager wifiManager; 
-WebServerManager webServer; 
 NVSManager nvsManager;
-PinsManager statusLED(STATUS_LED_PIN, OUTPUT);
+WebServerManager webServer; 
 
 void handleCredentials(const String& ssid, const String& pass) {
     nvsManager.saveData("ssid", ssid.c_str());
@@ -21,17 +19,21 @@ void handleCredentials(const String& ssid, const String& pass) {
     ESP.restart();
 }
 
+
 void checkLastConnection() {
+    WiFiManager wifiManager; 
+    PinsManager statusLED(STATUS_LED_PIN, OUTPUT);
+
     String last = nvsManager.readData("last");
     if (last == "true") {
         String ssid = nvsManager.readData("ssid");
         String pass = nvsManager.readData("pass");
-        delay(100);
+        delay(10);
         wifiManager.connect(ssid, pass);
     } else {
         wifiManager.startAP(ssid_ap, password_ap);
         webServer.setCredentialsHandler(handleCredentials);
-        webServer.start();
+        webServer.startSetupSrv();
         while(!wifiManager.isConnected()) {
             webServer.handleClient();
             statusLED.blinkLed(150);
@@ -42,9 +44,14 @@ void checkLastConnection() {
 
 void setup() {
     Serial.begin(115200);
+    Serial.printf("Flash size: %d kB\n", ESP.getFlashChipSize()/1024);
+    Serial.printf("PSRAM size: %d kB\n", ESP.getPsramSize()/1024);
+    Serial.printf("Heap: %d kB\n", ESP.getHeapSize()/1024);
+    Serial.printf("Free heap: %d kB\n", ESP.getFreeHeap()/1024);
     checkLastConnection();
+    webServer.startWebSrv();
 }
 
 void loop() {
-    
+    webServer.handleClient();
 }

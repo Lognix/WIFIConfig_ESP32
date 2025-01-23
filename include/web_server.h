@@ -7,7 +7,10 @@
 class WebServerManager {
 public:
     WebServerManager();
-    void start();
+    void startSetupSrv();
+    void startWebSrv();
+    void handleHeap();
+    void setWebPage();
     void handleClient();
     void setCredentialsHandler(void (*handler)(const String& ssid, const String& pass));
 private:

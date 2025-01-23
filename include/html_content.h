@@ -71,4 +71,34 @@ const char* HTML_SETUP = R"=====(
 </html>
 )=====";
 
+
+const char* HTML_INDEX = R"======(
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ESP32 Heap Monitor</title>
+        <script>
+            async function fetchHeapData() {
+                try {
+                    const response = await fetch('/heap');
+                    const data = await response.text();
+                    document.getElementById('heap-info').innerText = 'Free Heap: ' + data;
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            setInterval(fetchHeapData, 2000);
+            window.onload = fetchHeapData;
+        </script>
+    </head>
+    <body>
+        <h1>ESP32 Heap Monitor</h1>
+        <p id="heap-info">Loading...</p>
+    </body>
+    </html>
+  )======";
+
 #endif
