@@ -7,7 +7,7 @@
 class WiFiManager {
 public:
     WiFiManager();
-    void connect(const String& ssid, const String& password);
+    void connect(const char* ssid, const char* password);
     void startAP(const char* apSSID, const char* apPassword = nullptr);
     bool isConnected() const;
     void blinkLed(int delayValue);

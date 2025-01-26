@@ -11,14 +11,14 @@ NVSManager save;
 WiFiManager::WiFiManager() {
 }
 
-void WiFiManager::connect(const String& ssid, const String& password) {
+void WiFiManager::connect(const char* ssid, const char* password) {
     Serial.println("Trying to connect to Wi-Fi...");
-    WiFi.begin(ssid.c_str(), password.c_str());
+    WiFi.begin(ssid, password);
 
-    int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    int count = 0;
+    while (WiFi.status() != WL_CONNECTED && count < 20) {
         WIFIStatusLED.blinkLed(300);
-        attempts++;
+        count++;
     }
 
     if (WiFi.status() == WL_CONNECTED) {
@@ -31,7 +31,7 @@ void WiFiManager::connect(const String& ssid, const String& password) {
         Serial.println("Failed to connect.");
         WIFIStatusLED.setLed(false);
         save.saveData("last", "false");
-        //startAP("CONFIGURATION", "12345678");
+        delay(500);
         ESP.restart();
     }
 }

@@ -20,7 +20,7 @@ void WebServerManager::startWebSrv() {
 
 
 void WebServerManager::handleHeap() {
-    server.send(200, "text/plain", String(ESP.getFreeHeap()) + " B\nTemp: " + String(temperatureRead()) + " C\n" + String(random(5000, 100000)));
+    server.send(200, "text/plain", String(ESP.getFreeHeap()) + " B\nTemp: " + String(temperatureRead()));
 }
 
 void WebServerManager::setWebPage() {
@@ -32,7 +32,7 @@ void WebServerManager::handleClient() {
     server.handleClient();
 }
 
-void WebServerManager::setCredentialsHandler(void (*handler)(const String& ssid, const String& pass)) {
+void WebServerManager::setCredentialsHandler(void (*handler)(const char* ssid, const char* pass)) {
     _credentialsHandler = handler;
 }
 
@@ -45,7 +45,7 @@ void WebServerManager::handleConnect() {
     String pass = server.arg("pass");
 
     if (_credentialsHandler) {
-        _credentialsHandler(ssid, pass);
+        _credentialsHandler(ssid.c_str(), pass.c_str());
     }
 
     server.send(200, "text/html", "Connecting to Wi-Fi... Reload.");

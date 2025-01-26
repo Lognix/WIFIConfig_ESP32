@@ -4,18 +4,26 @@
 #include "nvs_manager.h"
 #include "pins_manager.h"
 #include "pins_config.h"
+#include "config.h"
+#include <UniversalTelegramBot.h>
+#include <WiFiClientSecure.h>
 
-const char *ssid_ap = "CONFIGURATION";
-const char *password_ap = "12345678";
+
+
 
 NVSManager nvsManager;
 WebServerManager webServer; 
 
-void handleCredentials(const String& ssid, const String& pass) {
-    nvsManager.saveData("ssid", ssid.c_str());
-    nvsManager.saveData("pass", pass.c_str());
+WiFiClientSecure client;
+UniversalTelegramBot bot(TGTOKEN, client);
+
+long lastUpdateId = 0;
+
+void handleCredentials(const char* ssid, const char* pass) {
+    nvsManager.saveData("ssid", ssid);
+    nvsManager.saveData("pass", pass);
     nvsManager.saveData("last", "true");
-    delay(1000);
+    delay(500);
     ESP.restart();
 }
 
@@ -28,10 +36,10 @@ void checkLastConnection() {
     if (last == "true") {
         String ssid = nvsManager.readData("ssid");
         String pass = nvsManager.readData("pass");
-        delay(10);
-        wifiManager.connect(ssid, pass);
+        delay(100);
+        wifiManager.connect(ssid.c_str(), pass.c_str());
     } else {
-        wifiManager.startAP(ssid_ap, password_ap);
+        wifiManager.startAP(SSID_AP, PASS_AP);
         webServer.setCredentialsHandler(handleCredentials);
         webServer.startSetupSrv();
         while(!wifiManager.isConnected()) {
@@ -50,8 +58,33 @@ void setup() {
     Serial.printf("Free heap: %d kB\n", ESP.getFreeHeap()/1024);
     checkLastConnection();
     webServer.startWebSrv();
+    client.setInsecure();
 }
 
 void loop() {
     webServer.handleClient();
+    int numNewMessages = bot.getUpdates(lastUpdateId);
+  while (numNewMessages) {
+    Serial.println("New message received!");
+
+    for (int i = 0; i < numNewMessages; i++) {
+      String chat_id = bot.messages[i].chat_id;
+      String text = bot.messages[i].text;
+      String from_name = bot.messages[i].from_name;
+
+      if (from_name == "") from_name = "Unknown";
+
+      Serial.println("From: " + from_name);
+      Serial.println("Chat ID: " + chat_id);
+      Serial.println("Message: " + text);
+
+      bot.sendMessage(chat_id, "You said: " + text, "");
+
+      lastUpdateId = bot.messages[i].update_id + 1;
+    }
+
+    numNewMessages = bot.getUpdates(lastUpdateId);
+  }
+
+  delay(1000); 
 }

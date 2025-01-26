@@ -12,12 +12,13 @@ public:
     void handleHeap();
     void setWebPage();
     void handleClient();
-    void setCredentialsHandler(void (*handler)(const String& ssid, const String& pass));
+    void setCredentialsHandler(void (*handler)(const char *ssid, const char *pass));
+
 private:
     WebServer server;
     void handleRoot();
     void handleConnect();
-    void (*_credentialsHandler)(const String& ssid, const String& pass);
+    void (*_credentialsHandler)(const char* ssid, const char* pass);
 };
 
 #endif
